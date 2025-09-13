@@ -237,34 +237,42 @@ app/
 
 ```mermaid
 flowchart LR
-  subgraph Internet
-    User["Users / Browsers"]
+ subgraph Internet["Internet"]
+        User["Users / Browsers"]
   end
-
-  subgraph Edge["Edge"]
-    CDN["CDN"]
-    WAF["WAF (WAF / Cloud Armor)"]
+ subgraph Edge["Edge"]
+        CDN["CDN"]
+        WAF["WAF (WAF / Cloud Armor)"]
   end
-
-  subgraph AWSVPC["AWS/GCP VPC"]
-    
-    subgraph EKS["EKS / GKE"]
-      ALB["HTTP(S) Load Balancer / ALB"]
-      Ingress["Ingress / Gateway API"]
-      API["Flask API Pods"]
-      SPA["Static SPA (optional if served via CDN+S3/GCS)"]
-    end
-    
-    subgraph AWSDATAVPC["DATA"]
-      DB["(RDS / Cloud SQL)"]
-      CACHE["CACHE"]
-    end
+ subgraph APP["APP VPC"]
+        ALB["Load Balancer / ALB"]
+        Ingress["Ingress / Gateway API"]
+        API["Flask API"]
   end
+ subgraph DATA["DATA VPC"]
+        CACHE["CACHE"]
+        DB["(RDS / Cloud SQL)"]
+  end
+ subgraph CLOUD["AWS/GCP"]
+        APP
+        SPA["Static SPA (optional if served via CDN+S3/GCS)"]
+        MONITORING["MONITORING"]
+        DATA
+  end
+    User --> CDN
+    CDN --> WAF & SPA
+    WAF --> ALB
+    ALB --> Ingress
+    Ingress --> API
+    API --> CACHE
+    CACHE --> API & DB
+    DB --> CACHE
+    APP --> MONITORING
+    DATA --> MONITORING
 
-  User --> CDN --> WAF --> ALB --> Ingress --> API
-  CDN --> SPA
-  API --> DB
-  DB --> CACHE -->DB
+    style CLOUD fill:#BBDEFB
+    style Edge fill:#BBDEFB
+    style Internet fill:#FFE0B2
 
 ```
 
