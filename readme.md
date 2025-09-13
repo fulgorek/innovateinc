@@ -246,9 +246,10 @@ flowchart LR
     WAF["WAF (WAF / Cloud Armor)"]
   end
 
-  subgraph AWSVPC["AWS/GCP VPC (3 AZ)"]
-    ALB["HTTP(S) Load Balancer / ALB"]
+  subgraph AWSVPC["AWS/GCP VPC"]
+    
     subgraph EKS["EKS / GKE"]
+      ALB["HTTP(S) Load Balancer / ALB"]
       Ingress["Ingress / Gateway API"]
       API["Flask API Pods"]
       SPA["Static SPA (optional if served via CDN+S3/GCS)"]
@@ -264,6 +265,7 @@ flowchart LR
   CDN --> SPA
   API --> DB
   DB --> CACHE -->DB
+
 ```
 
 -----
