@@ -238,27 +238,32 @@ app/
 ```mermaid
 flowchart LR
   subgraph Internet
-    User[Users / Browsers]
+    User["Users / Browsers"]
   end
 
-  subgraph Edge[Edge]
-    CDN[CloudFront / Cloud CDN]
-    WAF[WAF (AWS WAF / Cloud Armor)]
+  subgraph Edge["Edge"]
+    CDN["CDN"]
+    WAF["WAF (WAF / Cloud Armor)"]
   end
 
-  subgraph AWSVPC[AWS/GCP VPC (3 AZ / 3 Zones)]
-    ALB[HTTP(S) Load Balancer / ALB]
-    subgraph EKS[EKS / GKE]
-      Ingress[Ingress / Gateway API]
-      API[Flask API Pods]
-      SPA[Static SPA (optional if served via CDN+S3/GCS)]
+  subgraph AWSVPC["AWS/GCP VPC (3 AZ)"]
+    ALB["HTTP(S) Load Balancer / ALB"]
+    subgraph EKS["EKS / GKE"]
+      Ingress["Ingress / Gateway API"]
+      API["Flask API Pods"]
+      SPA["Static SPA (optional if served via CDN+S3/GCS)"]
     end
-    DB[(PostgreSQL: RDS / Cloud SQL)]
+    
+    subgraph AWSDATAVPC["DATA"]
+      DB["(RDS / Cloud SQL)"]
+      CACHE["CACHE"]
+    end
   end
 
   User --> CDN --> WAF --> ALB --> Ingress --> API
   CDN --> SPA
   API --> DB
+  DB --> CACHE -->DB
 ```
 
 -----
